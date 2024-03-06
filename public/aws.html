@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <title>Document</title> 
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="text-center">
+                File upload
+            </h1>
+            <h2>upload files</h2>
+            <div class="form-group" >
+                <input type="file" multiple class="form-control" id="fileInput" required>
+            </div>
+            <div class="form-group" >
+                <button onclick="uploadFiles('techv0324')" class="btn btn-dangerbtn-block">
+                    upload
+                </button>
+            </div>
+
+            <h2>uploaded files</h2>
+            <table class="table table-striped " id="fileTable">
+                <thead>
+                <tr>
+                    <th> Name</th>
+                    <th> Sie</th>
+                    <th> view</th>
+                    <th> Delete</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </body>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.932.0.min.js"></script>
+    <script>
+const AWS = require('aws-sdk');
+
+AWS.config.update({
+    region: 'eu-north-1',
+    accessKeyId: "AKIA3FLD4NXZNBU72M5B",
+    secretAccessKey: "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"
+});
+
+const s3 = new AWS.S3();
+
+let bucketName = "techv0324"
+
+function uploadFiles() {
+   let files =  document.getElementById('fileInput').files
+   var fileCount = files.length
+
+    for (let i =0; i< fileCount; i++) {
+        var file = request[i]
+
+        let params = {
+            bucket: bucketName,
+            key: file.name,
+            body: file
+        }
+
+        s3.upload(params, (err, data) => {
+            console.log("file upload  ")
+            getBucketList()
+        })
+    }
+
+}  
+
+
+async function getBucketList() {
+
+    let tableBody = document.querySelector("#fileTable tbody")
+    tableBody.innerHTML = ""    
+    s3.listObjectsV2({ Bucket: bucketName }, (err, data) => {
+        if (err) {
+            console.error('Error listing buckets:', err);
+        } else {
+            data.Contents.forEach(obj => {
+                var fileRow = document.createElement("tr")
+                var fileNameCell = document.createElement("td")
+                fileNameCell.textContent = obj.Key
+                fileRow.appendChild(fileNameCell)
+
+                var fileRow = document.createElement("tr")
+                var fileNameCell = document.createElement("td")
+                fileNameCell.textContent = obj.Key
+                fileRow.appendChild(fileNameCell)
+
+                var fileRow = document.createElement("tr")
+                var fileNameCell = document.createElement("td")
+                fileNameCell.textContent = obj.Key
+                fileRow.appendChild(fileNameCell)
+
+            })
+        }
+    });
+}
+
+
+
+getBucketList()
+
+    </script>
+     </html>
